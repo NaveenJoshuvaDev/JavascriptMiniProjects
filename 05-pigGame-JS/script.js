@@ -1,7 +1,7 @@
 'use strict';
 
 
-// Selecting elements
+// Selecting elements//In querysselctor we have place the  operator for class as well as id
 //getElementById is  Little bit faster than queryselector
 //but if you use select more Ids at once by getElementById
 //but jonas prefered selecting queryselector
@@ -17,16 +17,36 @@ const btnNew = document.querySelector('.btn--new');
 const btnRoll = document.querySelector('.btn--roll');
 const btnHold = document.querySelector('.btn--hold');
 
+//Starting Conditions
+let scores, currentScore, activePlayer, playing;
+const init = function () {
+  
+  scores = [0, 0];//Big scores in scree currentScore =  activePlayer = 0 playing = true;
+ currentScore=0;
+ activePlayer=0;
+ playing=true;
+  score0El.textContent = 0;
+  score1El.textContent = 0;
+  current0El.textContent = 0;
+  current1El.textContent = 0;
 
-score0El.textContent = 0;
-score1El.textContent = 0;
-diceEl.classList.add('hidden');
-const scores = [0, 0];//Big scores in screen
-let currentScore = 0;
-let activePlayer = 0;
-
+  diceEl.classList.add('hidden');
+  player0El.classList.remove('player--winner');
+  player1El.classList.remove('player--winner');
+  player0El.classList.add('player--active');
+  player1El.classList.remove('player--active');
+}
+const switchPlayer = function () {
+  document.getElementById(`current--${activePlayer}`).textContent = 0;
+  currentScore=0;
+  activePlayer = activePlayer === 0 ? 1 : 0;
+ player0El.classList.toggle('player--active');
+ player1El.classList.toggle('player--active');
+}
+init();
 // Rolling dice functionality
 btnRoll.addEventListener('click', function () {
+  if(playing) {
 
     // 1. Generating a random dice roll
     const dice = Math.trunc(Math.random() * 6) + 1;
@@ -44,10 +64,30 @@ btnRoll.addEventListener('click', function () {
   }else{
    //switch to next player
 
-   document.getElementById(`current--${activePlayer}`).textContent = 0;
-   currentScore=0;
-   activePlayer = activePlayer === 0 ? 1 : 0;
-  player0El.classList.toggle('player--active');
-  player1El.classList.toggle('player--active');
+   switchPlayer();
   }
+}
   });
+
+btnHold.addEventListener('click', function() {
+  if (playing){
+  //1.Add current score to active player's score
+scores[activePlayer] += currentScore;
+//scores[1] = scores[1] + currentScore;
+document.getElementById(`score--${activePlayer}`).textContent=scores[activePlayer];
+  //2.Check if player's score is >= 100
+  if(scores[activePlayer] >= 100) {
+     //Finish the game
+     playing =false;
+     diceEl.classList.add('hidden');
+     document.querySelector(`.player--${activePlayer}`).classList.add('player--winner')
+     document.querySelector(`.player--${activePlayer}`).classList.add('player--active')
+  } 
+
+else{
+  //Switch to the next player
+  switchPlayer();
+}
+}
+});
+btnNew.addEventListener('click', init);//do not make a call on init function as soon as we clickit will be invoked
